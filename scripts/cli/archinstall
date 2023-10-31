@@ -110,7 +110,28 @@ set_locale() {
     done
 }
 
+#set time zone automatically or manually
+set_timezone() {
+    #get time zone automatically using curl then goto "ipapi.co/timezone"
+    timezone=$(curl https://ipapi.co/timezone)
+    echo "Based on your location, the timezone is: $timezone"
+    #choose "Yes" if the automatic time zone was correct; else "No" to manually type your time zone
+    echo "Is this correct?"
+    options=("Yes" "No")
+    select option in "${options[@]}"; do
+        case $option in
+            #use the automatic time zone
+            "Yes") break ;;
+            #set time zone manually by typing the region/city
+            "No") read -p "Please enter your timezone (e.g. Africa/Addis_Ababa): " timezone; echo "Timezone set to $timezone."; break ;;
+            #if user input is not valid, then prompt user to choose automatic or manual time zone
+            *) echo "Invalid option $REPLY, Please try again." ;;
+        esac
+    done
+}
+
 #function calls
 set_keymap
 check_internet
 set_locale
+set_timezone
