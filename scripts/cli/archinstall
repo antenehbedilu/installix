@@ -74,6 +74,43 @@ check_internet() {
 	fi
 }
 
+#set localization
+set_locale() {
+    #prompt user to select locales; so in the future we can set language
+    PS3='Please select locale language : '
+    options=("English - United States" "Amharic - Ethiopia" "Arabic - United Arab Emirates" "Danish - Denmark" "Dutch - Netherlands" "French - France" "German - Germany" "Italian - Italy" "Japanese - Japan" "Korean - Korea" "Malay - Malaysia" "Polish - Poland" "Romanian - Romanian" "Russian - Russia" "Simplified Chinese - China" "Spanish - Spain" "Swedish - Sweden" "Traditional Chinese - China" "Turkish - Turkey" "Quit")
+    select option in "${options[@]}"
+    do
+        case $option in
+            #save selected locale to variable for future use
+            "English - United States") locale="en_US.UTF-8"; break ;;
+            "Amharic - Ethiopia") locale="am_ET"; break ;;
+            "Arabic - United Arab Emirates") locale="ar_AE.UTF-8"; break ;;
+            "Danish - Denmark") locale="da_DK.UTF-8"; break ;;
+            "Dutch - Netherlands") locale="nl_NL.UTF-8"; break ;;
+            "French - France") locale="fr_FR.UTF-8"; break ;;
+            "German - Germany") locale="de_DE.UTF-8"; break ;;
+            "Italian - Italy") locale="it_IT.UTF-8"; break ;;
+            "Japanese - Japan") locale="ja_JP.UTF-8"; break ;;
+            "Korean - Korea") locale="ko_KR.UTF-8"; break ;;
+            "Malay - Malaysia") locale="ms_MY.UTF-8"; break ;;
+            "Polish - Poland") locale="pl_PL.UTF-8"; break ;;
+            "Russian - Russia") locale="ru_RU.UTF-8"; break ;;
+            "Romanian - Romanian") locale="ro_RO.UTF-8"; break ;;
+            "Simplified Chinese - China") locale="zh_CN.UTF-8"; break ;;
+            "Spanish - Spain") locale="es_ES.UTF-8"; break ;;
+            "Swedish - Sweden") locale="sv_SE.UTF-8"; break ;;
+            "Traditional Chinese - China") locale="zh_TW.UTF-8"; break ;;
+            "Turkish - Turkey") locale="tr_TR.UTF-8"; break ;;
+            #skip selecting locales
+            "Quit") break ;;
+            #if user input is not valid, then prompt user to select locales
+            *) echo "Invalid option $REPLY, Please try again." ;;
+        esac
+    done
+}
+
 #function calls
 set_keymap
 check_internet
+set_locale
