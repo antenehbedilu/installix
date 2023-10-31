@@ -130,8 +130,21 @@ set_timezone() {
     done
 }
 
+#set hostname to uniquely identify your machine on a network
+set_hostname() {
+    #prompt user to type hostname
+    read -p "Please enter your hostname: " hostname
+    #check the hostname/string is empty
+    if [ -z "$hostname" ]; then
+        echo "Hostname cannot be empty."
+        #if the user didn't type hostname/empty the function calls itself directly (recursive function)
+        set_hostname
+    fi
+}
+
 #function calls
 set_keymap
 check_internet
 set_locale
 set_timezone
+set_hostname
