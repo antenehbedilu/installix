@@ -59,5 +59,21 @@ set_keymap() {
     fi
 }
 
-#function call
+#check network connection of the live environment
+check_internet() {
+	#ping cloudflare public DNS
+	ping -c 1 1.1.1.1 > /dev/null
+	#if the exit status of the ping command is equal to 0; which indicates that the command executed successfully with out any errors or issues
+	if [ $? -eq 0 ]; then
+		echo "Internet access is available."
+	#else the ping command encountered an error
+	else
+		echo -e "Internet is not available.\nConnect to the network:\n\t1.Ethernet - plug in the cable.\n\t2.Wi-Fi - authenticate to the wireless network using iwctl utility.\n\t3.Mobile broadband modem - connect to the mobile network with the mmcli utility."
+		#exit the installation script
+		exit 1
+	fi
+}
+
+#function calls
 set_keymap
+check_internet
