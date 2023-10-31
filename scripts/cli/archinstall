@@ -1,0 +1,63 @@
+#!/bin/bash
+
+#1.user-configuration
+
+#set console keyboard layout
+set_keymap() {
+    #prompt users to change keyboard layout/set keymap
+    read -p "Skip - use the default keyboard layout US [Y/n]:  " response
+    #use the default console keymap as "us"
+    if [[ $response =~ ^[Yy]$ ]]; then
+	#set keymap to "us" for current session and exit function
+	keymap="us"; return
+    #set different keymap
+    else
+        #list available keymaps and accept users keymap input for the current session
+        PS3="Please select your keyboard layout: "
+        options=("us USA" "by Belarus" "ca Canada" "cf Canada French" "cz Czechia" "de German" "dk Denmark" "es Spain" "fi Finnish" "fr France" "gr Greece" "hu Hungary" "ie Ireland" "il Israel" "is Italy" "it Italy" "jp Japan" "lt Lithuania" "lv Latvia" "mk Macedonia" "nl Netherlands" "no Norway" "pl Poland" "pt Portugal" "ro Romania" "ru Russia" "se Sweden" "sg Swiss German" "tr Turkey" "ua Ukraine" "uk United Kingdom" "Quit")
+        select option in "${options[@]}"
+        do
+            case $REPLY in
+                #set keymap for the current session
+                1) keymap="us"; loadkeys $keymap; break ;;
+                2) keymap="by"; loadkeys $keymap; break ;;
+                3) keymap="ca"; loadkeys $keymap; break ;;
+                4) keymap="cf"; loadkeys $keymap; break ;;
+                5) keymap="cz"; loadkeys $keymap; break ;;
+                6) keymap="de"; loadkeys $keymap; break ;;
+                7) keymap="dk"; loadkeys $keymap; break ;;
+                8) keymap="es"; loadkeys $keymap; break ;;
+                9) keymap="fi"; loadkeys $keymap; break ;;
+                10) keymap="fr"; loadkeys $keymap; break ;;
+                11) keymap="gr"; loadkeys $keymap; break ;;
+                12) keymap="hu"; loadkeys $keymap; break ;;
+                13) keymap="ie"; loadkeys $keymap; break ;;
+                14) keymap="il"; loadkeys $keymap; break ;;
+                15) keymap="is"; loadkeys $keymap; break ;;
+                16) keymap="it"; loadkeys $keymap; break ;;
+                17) keymap="jp106"; loadkeys $keymap; break ;;
+                18) keymap="lt"; loadkeys $keymap; break ;;
+                19) keymap="lv"; loadkeys $keymap; break ;;
+                20) keymap="mk"; loadkeys $keymap; break ;;
+                21) keymap="nl"; loadkeys $keymap; break ;;
+                22) keymap="no"; loadkeys $keymap; break ;;
+                23) keymap="pl"; loadkeys $keymap; break ;;
+                24) keymap="pt-latin1"; loadkeys $keymap; break ;;
+                25) keymap="ro"; loadkeys $keymap; break ;;
+                26) keymap="ru"; loadkeys $keymap; break ;;
+                27) keymap="se-lat6"; loadkeys $keymap; break ;;
+                28) keymap="sg"; loadkeys $keymap; break ;;
+                29) keymap="tr"; loadkeys $keymap; break ;;
+                30) keymap="ua"; loadkeys $keymap; break ;;
+                31) keymap="uk"; loadkeys $keymap; break ;;
+                #skip setting keymap for the current session
+                32) break ;;
+                #if user input is not valid, then run the while loop again
+                *) echo "$REPLY invalid option, Please try again." ;;
+            esac
+        done
+    fi
+}
+
+#function call
+set_keymap
