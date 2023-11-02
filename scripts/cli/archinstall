@@ -142,9 +142,36 @@ set_hostname() {
     fi
 }
 
+#set disk for installation
+set_disk() {
+    #list of available disks on the system and filters the output to only include disk names
+    disks=($(lsblk -d | tail -n+2 | awk '$6=="disk"' | cut -d " " -f1))
+    #initializes an empty array to store the available disk options
+    options=()
+    #iterate over each element in the disks array
+    for disk in "${disks[@]}"; do
+    	#appends each disk to the options array
+    	options+=("$disk")
+    done
+    #prompt user to select a disk number from the list
+    PS3='Please select a disk for installation: '
+    #select a disk from the available options stored in the options array
+    select disk_choice in "${options[@]}"; do
+    	#checks if the disk choice is not empty, indicating that a valid disk option has been selected
+    	if [[ -n $disk_choice ]]; then
+        	#breaks the loop if a valid disk option has been selected
+        	break
+    	#if user input is not valid, then prompt user to choose a disk only from the disk list
+    	else
+        	echo "Invalid option $REPLY, Please try again."
+    	fi
+    done
+}
+
 #function calls
 set_keymap
 check_internet
 set_locale
 set_timezone
 set_hostname
+set_disk
