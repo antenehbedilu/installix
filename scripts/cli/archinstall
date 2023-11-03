@@ -168,6 +168,42 @@ set_disk() {
     done
 }
 
+#set a desktop environment or window manager (DE/WM)
+set_graphical_interface(){
+    #prompt user to select a desktop environment or window manager (DE/WM)
+    PS3='Please select a desktop environment or window manager (DE/WM): '
+    #an array that contains the available desktop environment or window manager for the user to choose from
+    options=("Minimal" "Server" "GNOME" "KDE" "Xfce" "Cinnamon" "MATE" "LXDE" "LXQt" "bspwm" "dwm" "i3" "Sway" "Hyprland" "Quit")
+    #the selected option(Minimal/Server/DE/WM) is stored in the "option" variable
+    select option in "${options[@]}"; do
+        #checks the value of option and sets the "graphical_interface" variable accordingly
+        case $option in
+            #minimal install
+            "Minimal") graphical_interface=$option; break ;;
+            #server install
+            "Server") graphical_interface=$option; break ;;
+            #desktop environment/DE options
+            "GNOME") graphical_interface=$option; break ;;
+            "KDE") graphical_interface=$option; break ;;
+            "Xfce") graphical_interface=$option; break ;;
+            "Cinnamon") graphical_interface=$option; break ;;
+            "MATE") graphical_interface=$option; break ;;
+            "LXDE") graphical_interface=$option; break ;;
+            "LXQt") graphical_interface=$option; break ;;
+            #window manager options
+            "bspwm") graphical_interface=$option; break ;;
+            "dwm") graphical_interface=$option; break ;;
+            "i3") graphical_interface=$option; break ;;
+            "Sway") graphical_interface=$option; break ;;
+            "Hyprland") graphical_interface=$option; break ;;
+            #skip setting graphical interface
+            "Quit") break ;;
+            #if user input is not valid, then prompt user to select graphical interface
+            *) echo "Invalid option $REPLY, Please try again." ;;
+        esac
+    done
+}
+
 #function calls
 set_keymap
 check_internet
@@ -175,3 +211,4 @@ set_locale
 set_timezone
 set_hostname
 set_disk
+set_graphical_interface
