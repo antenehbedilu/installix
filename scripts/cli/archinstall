@@ -97,12 +97,12 @@ check_internet() {
 #set localization
 set_locale() {
     #prompt user to select locales; so in the future we can set language
-    PS3='Please select locale language : '
+    PS3="Please select locale language : "
     options=("English - United States" "Amharic - Ethiopia" "Arabic - United Arab Emirates" "Danish - Denmark" "Dutch - Netherlands" "French - France" "German - Germany" "Italian - Italy" "Japanese - Japan" "Korean - Korea" "Malay - Malaysia" "Polish - Poland" "Romanian - Romania" "Russian - Russia" "Simplified Chinese - China" "Spanish - Spain" "Swedish - Sweden" "Traditional Chinese - China" "Turkish - Turkey" "Quit")
     select option in "${options[@]}"
     do
         case $option in
-            #save selected locale to variable for future use
+            #save selected locale to a variable for future use
             "English - United States") locale="en_US.UTF-8"; break ;;
             "Amharic - Ethiopia") locale="am_ET"; break ;;
             "Arabic - United Arab Emirates") locale="ar_AE.UTF-8"; break ;;
@@ -138,7 +138,8 @@ set_timezone() {
     #choose "Yes" if the automatic time zone was correct; else "No" to manually type your time zone
     echo "Is this correct?"
     options=("Yes" "No")
-    select option in "${options[@]}"; do
+    select option in "${options[@]}"
+    do
         case $option in
             #use the automatic time zone
             "Yes") break ;;
@@ -154,7 +155,7 @@ set_timezone() {
 set_hostname() {
     #prompt user to type hostname
     read -p "Please enter your hostname: " hostname
-    #check the hostname/string is empty
+    #check if the hostname/string is empty
     if [ -z "$hostname" ]; then
         echo "Hostname cannot be empty."
         #if the user didn't type hostname/empty the function calls itself directly (recursive function)
@@ -169,14 +170,16 @@ set_disk() {
     #initializes an empty array to store the available disk options
     options=()
     #iterate over each element in the disks array
-    for disk in "${disks[@]}"; do
+    for disk in "${disks[@]}"
+    do
     	#appends each disk to the options array
     	options+=("$disk")
     done
     #prompt user to select a disk number from the list
-    PS3='Please select a disk for installation: '
+    PS3="Please select a disk for installation: "
     #select a disk from the available options stored in the options array
-    select disk_choice in "${options[@]}"; do
+    select disk_choice in "${options[@]}"
+    do
     	#checks if the disk choice is not empty, indicating that a valid disk option has been selected
     	if [[ -n $disk_choice ]]; then
         	#breaks the loop if a valid disk option has been selected
@@ -255,14 +258,15 @@ set_graphic() {
 }
 
 #set a desktop environment or window manager (DE/WM)
-set_graphical_interface(){
+set_graphical_interface() {
     #prompt user to select a desktop environment or window manager (DE/WM)
-    PS3='Please select a desktop environment or window manager (DE/WM): '
-    #an array that contains the available desktop environment or window manager for the user to choose from
+    PS3="Please select a desktop environment or window manager (DE/WM): "
+    #array that contains the available desktop environment or window manager for the user to choose from
     options=("Minimal" "Server" "GNOME" "KDE" "Xfce" "Cinnamon" "MATE" "LXDE" "LXQt" "bspwm" "dwm" "i3" "Sway" "Hyprland" "Quit")
     #the selected option(Minimal/Server/DE/WM) is stored in the "option" variable
-    select option in "${options[@]}"; do
-        #checks the value of option and sets the "graphical_interface" variable accordingly
+    select option in "${options[@]}"
+    do
+        #save selected graphical interface to a variable for future use
         case $option in
             #minimal install
             "Minimal") graphical_interface=$option; break ;;
@@ -276,7 +280,7 @@ set_graphical_interface(){
             "MATE") graphical_interface=$option; break ;;
             "LXDE") graphical_interface=$option; break ;;
             "LXQt") graphical_interface=$option; break ;;
-            #window manager options
+            #window manager/WM options
             "bspwm") graphical_interface=$option; break ;;
             "dwm") graphical_interface=$option; break ;;
             "i3") graphical_interface=$option; break ;;
@@ -298,7 +302,7 @@ set_user() {
     user=$(echo "$user" | tr -d ' ')
     #set a limit to the user string length; max 32 characters according to "useradd" man page
     user=${user:0:32}
-    #check the username/string is empty
+    #check if the username/string is empty
     if [ -z "$user" ]; then
         echo "Username cannot be empty."
         #if the user didn't type username/empty the function calls itself directly (recursive function)
@@ -314,17 +318,17 @@ set_password() {
     #prompt user to re-enter password
     read -sp "Please re-enter your password: " repassword
     echo
-    #check if password/string is empty
+    #check if the password/string is empty
     if [ -z "$password" ] || [ -z "$repassword" ]; then
         echo "Password cannot be empty."
         #if the user didn't type password/empty; the function calls itself directly (recursive function)
         set_password
-    #check if password/string and repassword/string match
+    #check if the password/string and repassword/string match
     elif [ "$password" != "$repassword" ]; then
         echo "Password doesn't match."
         #if the user's password didn't match; the function calls itself directly (recursive function)
         set_password
-    #check if password isn't empty and password and the re-enter password match
+    #check if the password isn't empty and password and the re-enter password match
     else
         #set password
         password="$password"
