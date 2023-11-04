@@ -168,6 +168,72 @@ set_disk() {
     done
 }
 
+#set a graphics card driver
+#NOTE: the function doesn't support hybrid graphics card laptops with intel and nvidia GPU for now
+set_graphic() {
+    #select graphics card automatically
+    #run lspci command and filter the output for the graphics card
+    graphic_card=$(lspci | grep -i 'VGA compatible controller')
+    #extract the driver information from the output
+    driver=$(echo "$graphic_card" | awk -F' ' '{print $5}')
+    #print the automatic graphics card information; NOTE Advanced is for AMD
+    echo "Based on your machine your graphic card is: $driver"
+    #set graphic driver automatically
+    set_driver_automatically() {
+        #save selected graphic card to a variable for future use
+        case "$driver" in
+            #intel graphic driver
+            "Intel") graphic_driver="xf86-video-intel" ;;
+            #amd graphic driver
+            "Advanced") graphic_driver="xf86-video-amdgpu" ;;
+            #nvidia graphic driver
+            "NVIDIA") graphic_driver="nvidia nvidia-utils nvidia-settings" ;;
+            #if user input is not valid, then prompt user to select graphic driver
+            *) echo "Invalid option $REPLY, Please try again." ;;
+            esac
+    }
+    #set graphic driver manually
+    set_driver_manually() {
+        #prompt user to select a graphic driver
+        PS3="Please select a graphic card: "
+        #array that contains the available graphic driver for the user to choose
+        options=("VM" "Intel" "AMD" "NVIDIA" "Quit")
+        #the selected option(graphic driver) is stored in the "option" variable
+        select option in "${options[@]}"
+        do
+            #save selected graphic card to a variable for future use
+            case $option in
+                #virtual-machine graphic driver
+                "VM") graphic_driver="xf86-video-qxl"; break ;;
+                #intel graphic driver
+                "Intel") graphic_driver="xf86-video-intel"; break ;;
+                #amd graphic driver
+                "AMD") graphic_driver="xf86-video-amdgpu"; break ;;
+                #nvidia graphic driver
+                "NVIDIA") graphic_driver="nvidia nvidia-utils nvidia-settings"; break ;;
+                ##skip selecting graphic driver
+                "Quit") break ;;
+                #if user input is not valid, then prompt user to select graphic driver
+                *) echo "Invalid option $REPLY, Please try again." ;;
+            esac
+        done
+    }
+    #choose "Yes" if the automatic graphic card was correct; else "No" to manually set graphic card
+    echo "Is this correct?"
+    options=("Yes" "No")
+    select option in "${options[@]}"
+    do
+        case $option in
+            #use the automatic graphic card
+            "Yes") set_driver_automatically; break ;;
+            #set graphic card manually
+            "No") set_driver_manually; break;;
+            #if user input is not valid, then prompt user to choose automatic or manual graphic card
+            *) echo "Invalid option $REPLY, Please try again." ;;
+        esac
+    done
+}
+
 #set a desktop environment or window manager (DE/WM)
 set_graphical_interface(){
     #prompt user to select a desktop environment or window manager (DE/WM)
@@ -211,4 +277,5 @@ set_locale
 set_timezone
 set_hostname
 set_disk
+set_graphic
 set_graphical_interface
