@@ -2,6 +2,26 @@
 
 #1.user-configuration
 
+#print welcome message when the installer starts
+welcome_msg() {
+    #print ASCII and installix info
+    echo -e "
+----------------------------------------------------------
+ ██                    ██              ██  ██ ██
+░░                    ░██             ░██ ░██░░
+ ██ ███████   ██████ ██████  ██████   ░██ ░██ ██ ██   ██
+░██░░██░░░██ ██░░░░ ░░░██░  ░░░░░░██  ░██ ░██░██░░██ ██
+░██ ░██  ░██░░█████   ░██    ███████  ░██ ░██░██ ░░███
+░██ ░██  ░██ ░░░░░██  ░██   ██░░░░██  ░██ ░██░██  ██░██
+░██ ███  ░██ ██████   ░░██ ░░████████ ███ ███░██ ██ ░░██
+░░ ░░░   ░░ ░░░░░░     ░░   ░░░░░░░░ ░░░ ░░░ ░░ ░░   ░░
+----------------------------------------------------------
+             Automated Linux Installer Script                 
+----------------------------------------------------------
+     Repo: https://github.com/antenehbedilu/installix                      
+"
+}
+
 #set console keyboard layout
 set_keymap() {
     #prompt user to change keyboard layout/set keymap
@@ -314,6 +334,7 @@ set_password() {
 }
 
 #function calls
+welcome_msg
 set_keymap
 check_internet
 set_locale
