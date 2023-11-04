@@ -333,15 +333,50 @@ set_password() {
     fi
 }
 
+#checking your configuration
+configuration() {
+    #version number of the script
+    VERSION="0.0.1"
+    #returns machine hardware, kernel release and kernel name 
+    DISTRO=$(uname -mrs)
+    #print configuration
+    printf "\nConfiguration\n
+==============================================
+Script Version | $VERSION
+----------------------------------------------
+Distro Info    | $DISTRO
+User           | $user
+Password       | $password
+Hostname       | $hostname
+Keyboard       | $keymap
+Localization   | $locale
+Timezone       | $timezone
+Disk           | $disk_choice
+GPU            | $graphic_driver
+DE/WM          | $graphical_interface
+==============================================\n"
+    #choose "Yes" to continue with the script; else "No" to re-run the user-configuration
+    read -p  "Is this correct? [Y/n]: " response
+    if [[ $response =~ ^[Yy]$ || -z $response ]]; then
+        return
+    else
+        call_func
+    fi
+}
+
 #function calls
 welcome_msg
-set_keymap
-check_internet
-set_locale
-set_timezone
-set_hostname
-set_disk
-set_graphic
-set_graphical_interface
-set_user
-set_password
+call_func() {
+    set_keymap
+    check_internet
+    set_locale
+    set_timezone
+    set_hostname
+    set_disk
+    set_graphic
+    set_graphical_interface
+    set_user
+    set_password
+    configuration
+}
+call_func
