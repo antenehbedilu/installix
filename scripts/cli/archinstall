@@ -270,6 +270,22 @@ set_graphical_interface(){
     done
 }
 
+#set username for a new user
+set_user() {
+    #prompt user to type username
+    read -p "Please enter your username: " user
+    #remove spaces from the user string
+    user=$(echo "$user" | tr -d ' ')
+    #set a limit to the user string length; max 32 characters according to "useradd" man page
+    user=${user:0:32}
+    #check the username/string is empty
+    if [ -z "$user" ]; then
+        echo "Username cannot be empty."
+        #if the user didn't type username/empty the function calls itself directly (recursive function)
+        set_user
+    fi
+}
+
 #function calls
 set_keymap
 check_internet
@@ -279,3 +295,4 @@ set_hostname
 set_disk
 set_graphic
 set_graphical_interface
+set_user
