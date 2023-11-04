@@ -27,7 +27,7 @@ set_keymap() {
     #prompt user to change keyboard layout/set keymap
     read -p "Skip - use the default keyboard layout US [Y/n]:  " response
     #use the default console keymap as "us"
-    if [[ $response =~ ^[Yy]$ ]]; then
+    if [[ $response =~ ^[Yy]$ || -z $response ]]; then
 	#set keymap to "us" for current session and exit function
 	keymap="us"; return
     #set different keymap
