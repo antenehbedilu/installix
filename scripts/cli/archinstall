@@ -286,6 +286,33 @@ set_user() {
     fi
 }
 
+#set password for the new user
+set_password() {
+    #prompt user to type password
+    read -sp "Please enter your password: " password
+    echo
+    #prompt user to re-enter password
+    read -sp "Please re-enter your password: " repassword
+    echo
+    #check if password/string is empty
+    if [ -z "$password" ] || [ -z "$repassword" ]; then
+        echo "Password cannot be empty."
+        #if the user didn't type password/empty; the function calls itself directly (recursive function)
+        set_password
+    #check if password/string and repassword/string match
+    elif [ "$password" != "$repassword" ]; then
+        echo "Password doesn't match."
+        #if the user's password didn't match; the function calls itself directly (recursive function)
+        set_password
+    #check if password isn't empty and password and the re-enter password match
+    else
+        #set password
+        password="$password"
+        #set a limit to the password string length; no maximum limit on password length but for older or obsolete systems might have limits imposed by their password storage system; so we set a max 255 characters
+        password=${password:0:255}
+    fi
+}
+
 #function calls
 set_keymap
 check_internet
@@ -296,3 +323,4 @@ set_disk
 set_graphic
 set_graphical_interface
 set_user
+set_password
