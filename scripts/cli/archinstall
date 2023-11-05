@@ -384,3 +384,15 @@ call_func() {
     configuration
 }
 call_func
+
+#2.pre-installation
+
+#update the system clock
+setup_clock() {
+	#run "timedatectl" just to ensure the system clock is accurate; because the live environment "systemd-timesyncd" is enabled by default and time will be synced automatically once an internet connection is established; then hide the output of timedatectl from the user
+	timedatectl > /dev/null
+	echo -e "\nSystem clock uptodate!"
+}
+
+#function call
+setup_clock
