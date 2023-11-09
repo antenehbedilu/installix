@@ -396,5 +396,58 @@ setup_clock() {
 	echo -e "\nSystem clock uptodate!"
 }
 
-#function call
+#partition, format and mount disk
+setup_disk() {
+    #add "/dev" to the disk choice eg. from sda or nvme0n1 to /dev/sda or /dev/nvme0n1
+    DEVICE="/dev/$disk_choice"
+    #1.partition the disk
+    partition_disk() {
+        #wipe partition table
+	wipefs -a $DEVICE
+        #create a GPT partition table
+	parted -s $DEVICE mklabel gpt
+        #create primary boot partition (EFI)
+	parted -s $DEVICE mkpart primary fat32 1MiB 301MiB
+        #create primary root partition
+        parted -s $DEVICE mkpart primary ext4 301MiB 100%
+        #set boot partition as ESP (EFI System Partition)
+        parted -s $DEVICE set 1 esp on
+        #print the partition table
+        parted -s $DEVICE print
+    }
+    #2.format the partitions
+    format_partitions() {
+        #create an EFI file system
+	yes | mkfs.fat -F  32  $DEVICE"$1"
+        #create an ext4 root file system
+	yes | mkfs.ext4 $DEVICE"$2"
+    }
+    #3.mount the file systems
+    mount_filesystems() {
+        #mount the root volume to /mnt
+        mount $DEVICE"$2" /mnt
+        #mount the EFI volume to /mnt/boot
+        mount --mkdir $DEVICE"$1" /mnt/boot && lsblk
+    }
+    #if the disk choice was a HDD or SSD eg. sda
+    if [[ $disk_choice == sd* ]]; then
+        #wipe and create a GPT partition table; finally create a boot and root partition
+        partition_disk
+        #format the boot and root file system; pass "1" and "2" as arguments for the format_partitions function as /dev/sdX1 and /dev/sdX2
+        format_partitions "1" "2"
+        #mount the root and boot volume; pass "1" and "2" as arguments for the mount_filesystems function as /dev/sdX1 and /dev/sdX2
+        mount_filesystems "1" "2"
+    #if the disk choice was NVMe eg. nvme0n1
+    elif [[ $disk_choice == nvme* ]]; then
+        #wipe and create a GPT partition table; finally create a boot and root partition
+        partition_disk
+        #format the boot and root file system; pass "p1" and "p2" as arguments for the format_partitions function as /dev/nvmeXn1p1 and /dev/nvmeXn1p2
+        format_partitions "p1" "p2"
+        #mount the root and boot volume; pass "p1" and "p2" as arguments for the mount_filesystems function as /dev/nvmeXn1p1 and /dev/nvmeXn1p2
+        mount_filesystems "p1" "p2"
+    fi
+}
+
+#function calls
 setup_clock
+setup_disk
