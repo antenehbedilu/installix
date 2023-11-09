@@ -205,6 +205,8 @@ set_graphic() {
     set_driver_automatically() {
         #save selected graphic card to a variable for future use
         case "$driver" in
+	    #virtual-machine/kvm graphic driver
+	    "Device") graphic_driver="xf86-video-qxl" ;;
             #intel graphic driver
             "Intel") graphic_driver="xf86-video-intel" ;;
             #amd graphic driver
