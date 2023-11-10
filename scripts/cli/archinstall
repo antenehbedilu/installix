@@ -451,3 +451,15 @@ setup_disk() {
 #function calls
 setup_clock
 setup_disk
+
+#3.installation
+
+#select the mirrors
+setup_mirrors() {
+    #sort the latest HTTP mirrors from 15 mirror servers by speed and save the mirrorlist for faster packages download using the reflector package
+    reflector --verbose --sort rate -l 15 --save /etc/pacman.d/mirrorlist
+    echo -e "\nMirror list uptodate!"
+}
+
+#function call
+setup_mirrors
