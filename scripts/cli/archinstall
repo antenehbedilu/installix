@@ -467,6 +467,13 @@ edit_pacman() {
     sed -i 's/#Color/Color/' /etc/pacman.conf && sed -i 's/#ParallelDownloads = 5/ParallelDownloads = 5/' /etc/pacman.conf
 }
 
+#install essential packages
+pacstrap_system() {
+    #use the pacstrap script to install the base package, base-devel, Linux kernel and firmware for common hardware, other packages that aren't included in the base package but necessary for a fully functional base system;
+    pacstrap -K /mnt --noconfirm base base-devel linux linux-firmware man bash-completion vim openssh tmux dhcpcd iwd reflector htop neofetch
+}
+
 #function calls
 setup_mirrors
 edit_pacman
+pacstrap_system
