@@ -498,8 +498,15 @@ setup_timezone() {
     ln -sf /usr/share/zoneinfo/$timezone /etc/localtime && hwclock --systohc
 }
 
-#function call
+#generate the locales
+setup_localization() {
+    #generates the necessary locale files and sets the system's default language
+    sed -i 's/#$localization/$localization/' /etc/locale.gen && locale-gen && echo "LANG=$localization" >> /etc/locale.conf
+}
+
+#function calls
 setup_timezone
+setup_localization
 
 REALEND
 
