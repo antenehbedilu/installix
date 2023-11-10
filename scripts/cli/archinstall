@@ -492,7 +492,14 @@ gen_fstab
 #create "archinstall" script file inside the new system (/mnt); because when we chroot into the new system we can't find the old "archinstall" script file since it lives inside the live environment, which will break "installix" to fix that we need to create "archinstall" script inside "/mnt"  
 cat <<REALEND > /mnt/archinstall
 
-echo "Hello, from /mnt!"
+#set the time zone
+setup_timezone() {
+    #set the time zone and set the hardware clock from the system clock to prevent clock drift and ensure accurate time
+    ln -sf /usr/share/zoneinfo/$timezone /etc/localtime && hwclock --systohc
+}
+
+#function call
+setup_timezone
 
 REALEND
 
