@@ -477,3 +477,14 @@ pacstrap_system() {
 setup_mirrors
 edit_pacman
 pacstrap_system
+
+#4.configure the system
+
+#generate an fstab file
+gen_fstab() {
+    #generate an fstab file by UUID (unique identifier); used to define how disk partitions should be mounted into the file system
+    genfstab -U /mnt >> /mnt/etc/fstab
+}
+
+#function call
+gen_fstab
