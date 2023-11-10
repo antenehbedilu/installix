@@ -461,5 +461,12 @@ setup_mirrors() {
     echo -e "\nMirror list uptodate!"
 }
 
-#function call
+#edit the pacman package manager
+edit_pacman() {
+    #add color and enable parallel downloads to pacman package manager
+    sed -i 's/#Color/Color/' /etc/pacman.conf && sed -i 's/#ParallelDownloads = 5/ParallelDownloads = 5/' /etc/pacman.conf
+}
+
+#function calls
 setup_mirrors
+edit_pacman
