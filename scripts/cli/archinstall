@@ -514,10 +514,17 @@ setup_network() {
     systemctl enable systemd-networkd && systemctl enable systemd-resolved && systemctl enable systemd-timesyncd && systemctl enable dhcpcd && systemctl enable iwd.service
 }
 
+#create a new user
+setup_user() {
+    #create a new normal user with the option to create a home directory for the user, adds the user to the wheel group, sets the user's default shell to /bin/bash, sets the password for the newly created user, and allow members of the wheel group to execute commands with sudo without entering a password
+    useradd -mG  wheel -s /bin/bash $username && echo -e "$passwd\n$passwd" | passwd $username && sed -i "s/# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/" /etc/sudoers
+}
+
 #function calls
 setup_timezone
 setup_localization
 setup_network
+setup_user
 
 REALEND
 
