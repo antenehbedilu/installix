@@ -488,3 +488,20 @@ gen_fstab() {
 
 #function call
 gen_fstab
+
+#create "archinstall" script file inside the new system (/mnt); because when we chroot into the new system we can't find the old "archinstall" script file since it lives inside the live environment, which will break "installix" to fix that we need to create "archinstall" script inside "/mnt"  
+cat <<REALEND > /mnt/archinstall
+
+echo "Hello, from /mnt!"
+
+REALEND
+
+#change root into the new system
+chroot_system() {
+    #changing the root directory to "/mnt", assuming that "/mnt" is the mount point for your Arch Linux installation; after entering the chroot environment, you can perform various tasks as if you were working on the actual installed system such as installing packages, modifying configurations, or running system maintenance commands
+    #the "sh archinstall" command was added because "archinstall" script will exit (stop working) when we run "chroot_system" function because the "archinstall" script file is located inside the live environment not under "/mnt"; so we need to create a new "archinstall" script file inside "/mnt" and run the rest of the configuration
+    arch-chroot /mnt sh archinstall
+}
+
+#function call
+chroot_system
