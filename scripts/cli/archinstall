@@ -504,9 +504,20 @@ setup_localization() {
     sed -i 's/#$localization/$localization/' /etc/locale.gen && locale-gen && echo "LANG=$localization" >> /etc/locale.conf
 }
 
+#network configuration
+setup_network() {
+    #create the hostname file
+    echo "$hostname" > /etc/hostname
+    #create the hosts file
+    echo -e "\n127.0.0.1\tlocalhost\n::1\t\tlocalhost\n127.0.1.1\t$hostname.localdomain\t$hostname" >> /etc/hosts
+    #enabling systemd unit so that the network stuff starts at boot
+    systemctl enable systemd-networkd && systemctl enable systemd-resolved && systemctl enable systemd-timesyncd && systemctl enable dhcpcd && systemctl enable iwd.service
+}
+
 #function calls
 setup_timezone
 setup_localization
+setup_network
 
 REALEND
 
