@@ -426,6 +426,8 @@ setup_disk() {
     mount_filesystems() {
         #mount the root volume to /mnt
         mount $DEVICE"$2" /mnt
+	#save the root volume path used for bootloader configuration
+	root_bootloader=$DEVICE"$2"
         #mount the EFI volume to /mnt/boot
         mount --mkdir $DEVICE"$1" /mnt/boot && lsblk
     }
@@ -486,8 +488,17 @@ gen_fstab() {
     genfstab -U /mnt >> /mnt/etc/fstab
 }
 
-#function call
+#get CPU microcode type(Intel or AMD)
+get_microcode() {
+    #use the "lscpu" command to determine the CPU type and extract the vendor information using grep and cut commands; some times in VM it may output two type of CPU like "GenuineIntel" and "QEMU" which brake installix so to fix that we will be using the "head -n1" command to select only the first line of the output and assigned to the "vendor" variable
+    vendor=$(lscpu | grep "Vendor ID:" | cut -d ':' -f2 | awk '{$1=$1};1' | head -n1)
+    #if "$vendor" CPU is "GenuineIntel"(Intel) then "$ucode_bootloader" equals to "intel-ucode.img" or if "$vendor" CPU is "AuthenticAMD"(AMD) then "$ucode_bootloader" equals to "amd-ucode.img"; used for "/boot/loader/entries/arch.conf" file (shorthand for if-then-else control)
+    [ $vendor ==  GenuineIntel ] && ucode_bootloader="intel-ucode.img" || ucode_bootloader="amd-ucode.img"
+}
+
+#function calls
 gen_fstab
+get_microcode
 
 #create "archinstall" script file inside the new system (/mnt); because when we chroot into the new system we can't find the old "archinstall" script file since it lives inside the live environment, which will break "installix" to fix that we need to create "archinstall" script inside "/mnt"  
 cat <<REALEND > /mnt/archinstall
@@ -501,7 +512,7 @@ setup_timezone() {
 #generate the locales
 setup_localization() {
     #generates the necessary locale files and sets the system's default language
-    sed -i 's/#$localization/$localization/' /etc/locale.gen && locale-gen && echo "LANG=$localization" >> /etc/locale.conf
+    sed -i 's/#$locale/$locale/' /etc/locale.gen && locale-gen && echo "LANG=$locale" >> /etc/locale.conf
 }
 
 #network configuration
@@ -517,7 +528,35 @@ setup_network() {
 #create a new user
 setup_user() {
     #create a new normal user with the option to create a home directory for the user, adds the user to the wheel group, sets the user's default shell to /bin/bash, sets the password for the newly created user, and allow members of the wheel group to execute commands with sudo without entering a password
-    useradd -mG  wheel -s /bin/bash $username && echo -e "$passwd\n$passwd" | passwd $username && sed -i "s/# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/" /etc/sudoers
+    useradd -mG  wheel -s /bin/bash $user && echo -e "$password\n$password" | passwd $user && sed -i "s/# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/" /etc/sudoers
+}
+
+#install "systemd-boot" as boot loader
+setup_bootloader() {
+    #install a Linux-capable boot loader which is a piece of software started by the firmware (BIOS or UEFI), responsible for loading the kernel with the wanted kernel parameters and any external initramfs images; we will be using "systemd-boot" since now a days most machines are UEFI but there are other boot loaders like GRUB, GRUB Legacy, Unified kernel image, EFISTUB, Syslinux, Limine, rEFInd and more
+    #install microcode based on your CPU type (Intel or AMD)
+    #Intel CPU
+    if [[ $vendor == GenuineIntel ]]; then
+        echo "Installing microcode for Intel CPU"
+	pacman -S intel-ucode --noconfirm && /boot/intel-ucode.img
+    #AMD CPU
+    elif [[ $vendor == AuthenticAMD ]]; then
+        echo "Installing microcode for AMD CPU"
+	pacman -S amd-ucode --noconfirm && /boot/amd-ucode.img
+    #unknown CPU exit installix script
+    else
+        echo "Unknown CPU vendor"; exit
+    fi
+    #install systemd-boot to the ESP
+    bootctl --path=/boot install
+    #create a loader configuration file
+    echo -e "default arch.conf\ntimeout 3\nconsole-mode max\neditor no" > /boot/loader/loader.conf
+    #configure the boot entries for Arch Linux
+    echo -e "title Arch Linux\nlinux /vmlinuz-linux\ninitrd /$ucode_bootloader\ninitrd /initramfs-linux.img\noptions root=$root_bootloader quiet rw" > /boot/loader/entries/arch.conf
+    #update systemd-boot
+    bootctl update
+    #list systemd-boot
+    bootctl list
 }
 
 #function calls
@@ -525,6 +564,7 @@ setup_timezone
 setup_localization
 setup_network
 setup_user
+setup_bootloader
 
 REALEND
 
