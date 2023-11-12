@@ -566,6 +566,47 @@ setup_network
 setup_user
 setup_bootloader
 
+#5.post-installation
+
+#install a desktop environment or window manager (DE/WM)
+setup_graphical_interface() {
+    setup_minimal() {}
+    setup_server() {}
+    setup_gnome() {}
+    setup_kde() {}
+    setup_xfce() {}
+    setup_cinnamon() {}
+    setup_mate() {}
+    setup_lxde() {}
+    setup_lxqt() {}
+    setup_bspwm() {}
+    setup_dwm() {}
+    setup_i3() {}
+    setup_sway() {}
+    setup_hyprland() {}
+
+    #select a desktop environment or window manager (DE/WM) to install
+    case "$graphical_interface" in
+        "Minimal") setup_minimal ;;
+        "Server") setup_server ;;
+        "GNOME") setup_gnome ;;
+        "KDE") setup_kde ;;
+        "Xfce") setup_xfce ;;
+        "Cinnamon") setup_cinnamon ;;
+        "MATE") setup_mate ;;
+        "LXDE") setup_lxde ;;
+        "LXQt") setup_lxqt ;;
+        "bspwm") setup_bspwm ;;
+        "dwm") setup_dwm ;;
+        "i3") setup_i3 ;;
+        "Sway") setup_sway ;;
+        "Hyprland") setup_hyprland ;;
+    esac
+}
+
+#function call
+setup_graphical_interface
+
 REALEND
 
 #change root into the new system
